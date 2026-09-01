@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /responses/{userId} {
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasAll([
+          'schemaVersion', 'experiment', 'participantCode', 'utilities',
+          'responses', 'summary', 'serverCreatedAt'
+        ])
+        && request.resource.data.participantCode is string
+        && request.resource.data.participantCode.size() <= 24
+        && request.resource.data.responses is list
+        && request.resource.data.responses.size() <= 40;
+      allow read, delete: if false;
+    }
+
+    match /fractileResponses/{userId} {
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasAll([
+          'schemaVersion', 'experiment', 'participantCode', 'utilities',
+          'responses', 'validation', 'summary', 'serverCreatedAt'
+        ])
+        && request.resource.data.participantCode is string
+        && request.resource.data.participantCode.size() <= 24
+        && request.resource.data.responses is list
+        && request.resource.data.responses.size() <= 16
+        && request.resource.data.validation is list
+        && request.resource.data.validation.size() == 2;
+      allow read, delete: if false;
+    }
+
+    match /integratedResponses/{userId} {
+      allow create, update: if request.auth != null
+        && request.auth.uid == userId
+        && request.resource.data.keys().hasAll([
+          'schemaVersion', 'experiment', 'participantCode', 'utilities',
+          'responses', 'validation', 'summary', 'serverCreatedAt',
+          'applicationStatus'
+        ])
+        && request.resource.data.participantCode is string
+        && request.resource.data.participantCode.size() <= 24
+        && request.resource.data.responses is list
+        && request.resource.data.responses.size() <= 16
+        && request.resource.data.validation is list
+        && request.resource.data.validation.size() == 2
+        && request.resource.data.applicationStatus is string;
+      allow read, delete: if false;
+    }
+  }
+}
