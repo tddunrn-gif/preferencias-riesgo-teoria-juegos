@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12304a">
+  <meta name="description" content="Experiencia interactiva de utilidad, análisis de decisiones y teoría de juegos aplicada a un caso empresarial.">
+  <title>Del riesgo a la interacción estratégica | TDD · UNRN</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body>
+  <a class="skip-link" href="#app">Saltar al contenido</a>
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">TDD</span>
+      <span><strong>Teoría de la Decisión</strong><small>Universidad Nacional de Río Negro</small></span>
+    </div>
+    <div class="header-status" id="header-status">Experimento educativo</div>
+  </header>
+
+  <main id="app" tabindex="-1">
+    <section class="screen active" id="screen-welcome" aria-labelledby="welcome-title">
+      <div class="hero">
+        <p class="eyebrow">Unidad 1 · Preferencias y aplicación</p>
+        <h1 id="welcome-title">¿Qué valor tienen para vos los resultados inciertos?</h1>
+        <p class="lead">Vas a comparar resultados garantizados con proyectos empresariales inciertos. No hay respuestas correctas: interesa tu preferencia personal.</p>
+        <div class="time-card"><span aria-hidden="true">◷</span><div><strong>Encuesta: 4 minutos · Caso guiado: 13 minutos</strong><small>Hasta 15 decisiones breves, 13 pasos de decisión y 8 pasos estratégicos</small></div></div>
+      </div>
+
+      <div class="panel form-panel">
+        <h2>Antes de comenzar</h2>
+        <label for="participant-code">Código de participante</label>
+        <input id="participant-code" type="text" maxlength="24" autocomplete="off" spellcheck="false" placeholder="Ej.: A17" aria-describedby="code-help">
+        <p class="field-help" id="code-help">Usá el código indicado por el docente. No escribas tu nombre, DNI ni correo electrónico.</p>
+
+        <label class="consent-row" for="consent">
+          <input id="consent" type="checkbox">
+          <span>Comprendo que es una actividad educativa, que las decisiones son hipotéticas y que las respuestas se guardarán sin mi nombre.</span>
+        </label>
+        <p class="form-error" id="welcome-error" role="alert"></p>
+        <button class="button primary wide" id="start-button">Comenzar</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-instructions" aria-labelledby="instructions-title">
+      <div class="content-card narrow">
+        <p class="step-label">Cómo responder</p>
+        <h1 id="instructions-title">Siempre elegirás entre dos alternativas</h1>
+        <div class="instruction-grid">
+          <article class="mini-option safe"><span class="option-tag">Resultado garantizado</span><strong>Un resultado conocido</strong><p>Ocurre con seguridad, sin importar qué pase.</p></article>
+          <div class="versus" aria-hidden="true">o</div>
+          <article class="mini-option lottery"><span class="option-tag">Proyecto incierto</span><strong>Dos resultados posibles</strong><p>Una probabilidad para el mejor resultado y otra para el peor.</p></article>
+        </div>
+        <div class="notice"><strong>Importante:</strong> las probabilidades se mantienen en 50/50 mientras el resultado garantizado se ajusta. Así encontraremos tres puntos de tu curva. Si ambas opciones te resultan casi equivalentes, podés indicarlo.</div>
+        <button class="button primary" id="practice-button">Hacer una pregunta de práctica</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-choice" aria-labelledby="choice-title">
+      <div class="survey-topbar">
+        <div><span id="phase-label">Práctica</span><strong id="progress-label">Pregunta de ejemplo</strong></div>
+        <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+      </div>
+      <div class="scenario-card">
+        <p class="eyebrow" id="scenario-sector">Decisión de inversión</p>
+        <h1 id="choice-title">Elegí la alternativa que preferirías</h1>
+        <p id="scenario-text"></p>
+        <p class="unit-note">Todos los importes representan el resultado neto acumulado de los próximos dos años.</p>
+      </div>
+
+      <div class="choice-grid" id="choice-grid">
+        <button class="choice-card" id="choice-safe" data-choice="safe">
+          <span class="choice-letter">A</span><span class="option-tag">Resultado garantizado</span>
+          <strong id="safe-value"></strong><small>con certeza</small>
+        </button>
+        <button class="choice-card lottery-card" id="choice-lottery" data-choice="lottery">
+          <span class="choice-letter">B</span><span class="option-tag">Proyecto incierto</span>
+          <span class="outcome good"><strong id="best-prob"></strong><span>de obtener <b id="best-value"></b></span></span>
+          <span class="outcome bad"><strong id="worst-prob"></strong><span>de obtener <b id="worst-value"></b></span></span>
+          <span class="lottery-metrics">
+            <span><small>Valor esperado</small><strong id="lottery-ev"></strong></span>
+            <span><small>Probabilidad de pérdida</small><strong id="loss-prob"></strong></span>
+          </span>
+          <span class="ev-comparison" id="ev-comparison"></span>
+        </button>
+      </div>
+      <button class="button subtle" id="choice-equal">Las dos me resultan aproximadamente equivalentes</button>
+      <p class="keyboard-help">También podés responder con las teclas 1, 2 o 3.</p>
+    </section>
+
+    <section class="screen" id="screen-transition" aria-labelledby="transition-title">
+      <div class="content-card narrow center">
+        <div class="check-mark" aria-hidden="true">✓</div>
+        <p class="step-label">Práctica completada</p>
+        <h1 id="transition-title">Eso es todo lo que tenés que hacer</h1>
+        <p>Ahora comenzará el experimento. Estimaremos tres puntos de tu curva con un máximo de cuatro comparaciones por punto. Al final intentaremos anticipar dos decisiones nuevas.</p>
+        <button class="button primary" id="experiment-button">Comenzar el experimento</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-prediction" aria-labelledby="prediction-title">
+      <div class="content-card prediction-card">
+        <p class="step-label" id="prediction-phase">Prueba 1 de 2</p>
+        <h1 id="prediction-title">¿Podemos anticipar tu próxima decisión?</h1>
+        <p class="prediction-claim" id="prediction-claim"></p>
+        <p class="prediction-context">Esta situación no fue utilizada para estimar tu curva. Elegí lo que realmente preferirías.</p>
+        <div class="prediction-options">
+          <button class="prediction-option" id="prediction-safe">
+            <span class="option-tag">Resultado garantizado</span>
+            <strong id="prediction-safe-value"></strong>
+            <small>con certeza</small>
+          </button>
+          <button class="prediction-option lottery-card" id="prediction-lottery">
+            <span class="option-tag">Proyecto incierto</span>
+            <span><b id="prediction-best-prob"></b> de obtener <strong id="prediction-best-value"></strong></span>
+            <span><b id="prediction-worst-prob"></b> de obtener <strong id="prediction-worst-value"></strong></span>
+            <span class="prediction-ev">Valor esperado: <b id="prediction-ev"></b></span>
+          </button>
+        </div>
+        <div class="prediction-reveal" id="prediction-reveal" hidden>
+          <div class="reveal-icon" id="reveal-icon"></div>
+          <div><h2 id="reveal-title"></h2><p id="reveal-text"></p></div>
+        </div>
+        <button class="button primary" id="prediction-continue" hidden>Ver mi resultado completo</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-saving" aria-live="polite">
+      <div class="content-card narrow center"><div class="spinner" aria-hidden="true"></div><h1>Preparando tu resultado…</h1><p>Estamos calculando la curva y guardando tus respuestas.</p></div>
+    </section>
+
+    <section class="screen" id="screen-results" aria-labelledby="results-title">
+      <div class="results-header">
+        <div><p class="eyebrow">Experimento completado</p><h1 id="results-title">Tu perfil dentro de este experimento</h1><p id="result-description"></p></div>
+        <div class="result-badge" id="result-badge"></div>
+      </div>
+      <div class="results-grid">
+        <article class="panel chart-panel"><h2>Curva de utilidad estimada</h2><canvas id="utility-chart" width="760" height="430" role="img" aria-label="Gráfico de utilidad estimada frente a resultados monetarios"></canvas><div class="chart-legend"><span><i class="dot blue"></i>Tu utilidad</span><span><i class="line gray"></i>Referencia neutral</span></div></article>
+        <article class="panel"><h2>Puntos estimados</h2><div class="utility-table" id="utility-table"></div><p class="fine-print">La utilidad está normalizada entre 0 y 1. Los tres resultados intermedios corresponden a los fractiles 0,25; 0,50 y 0,75.</p></article>
+      </div>
+      <div class="application-callout">
+        <div><p class="eyebrow">Segunda parte</p><h2>Ejemplo de aplicación teórica</h2><p>El caso se construye paso a paso. Avanzarás por la matriz, el árbol, la información y la utilidad esperada.</p></div>
+        <button class="button primary" id="application-button">Ir a la aplicación</button>
+      </div>
+      <div class="result-actions"><button class="button secondary" id="download-button">Descargar mis resultados</button><button class="button subtle" id="restart-button">Cerrar y borrar esta pantalla</button></div>
+      <p class="save-status" id="save-status"></p>
+    </section>
+
+    <section class="screen" id="screen-application-intro" aria-labelledby="application-intro-title">
+      <div class="content-card application-intro">
+        <p class="eyebrow">Aplicación · BioValle Envases</p>
+        <h1 id="application-intro-title">Una misma decisión, vista con una teoría cada vez más completa</h1>
+        <p class="lead">BioValle Envases quiere transformar orujo de manzana del Alto Valle en bandejas compostables. Debe elegir la escala de producción antes de conocer la demanda. Una consultora ofrece un estudio piloto que puede reducir la incertidumbre.</p>
+        <div class="case-facts">
+          <article><span>Decisión</span><strong>Escala de la planta</strong></article>
+          <article><span>Incertidumbre</span><strong>Demanda alta o baja</strong></article>
+          <article><span>Horizonte</span><strong>VPN a tres años</strong></article>
+          <article><span>Unidad</span><strong>$ millones constantes</strong></article>
+        </div>
+        <div class="notice">Con el botón <em>Adelante</em> incorporarás una capa de teoría por vez y conservarás el mismo caso para comparar las recomendaciones.</div>
+        <button class="button primary" id="application-start">Adelante</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-application" aria-labelledby="application-title">
+      <div class="application-shell">
+        <div class="application-topbar">
+          <div><p class="eyebrow">Caso BioValle Envases</p><h1 id="application-title">Del problema a la estrategia óptima</h1></div>
+          <div class="lesson-progress"><span id="lesson-step">Paso 1 de 13</span><div><i id="lesson-progress-bar"></i></div></div>
+        </div>
+        <section class="theory-timeline" aria-label="Línea de tiempo de los métodos">
+          <div class="timeline-heading"><span>Historia de las ideas</span><strong id="timeline-current"></strong></div>
+          <div class="timeline-track" id="timeline-track"></div>
+        </section>
+        <div class="application-layout">
+          <article class="lesson-panel panel" id="lesson-content" aria-live="polite"></article>
+          <aside class="tree-panel panel">
+            <div class="tree-heading"><div><span class="option-tag">Árbol acumulativo</span><h2 id="tree-title">Estructura de la decisión</h2></div><button class="tree-key" id="tree-key-button" aria-expanded="false">Ver referencias</button></div>
+            <div class="tree-legend" id="tree-legend" hidden><span><i class="node-square"></i> Decisión</span><span><i class="node-circle"></i> Azar</span><span><i class="node-leaf"></i> Resultado</span><span>Las ramas atenuadas aún no se resuelven.</span></div>
+            <div class="tree-scroll"><svg id="case-tree" role="img" aria-label="Árbol de decisión progresivo de BioValle Envases"></svg></div>
+          </aside>
+        </div>
+        <div class="lesson-navigation"><button class="button subtle" id="lesson-back">Atrás</button><span id="lesson-section-label">Formulación</span><button class="button primary" id="lesson-next">Adelante</button></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-application-results" aria-labelledby="application-results-title">
+      <div class="results-header application-results-header">
+        <div><p class="eyebrow">Caso completado</p><h1 id="application-results-title">Una decisión, tres recomendaciones comparables</h1><p>El dinero describe los resultados; las probabilidades describen las creencias; tu función de utilidad incorpora cómo valorás el riesgo.</p></div>
+        <div class="result-badge">Estrategia completa</div>
+      </div>
+      <div id="final-application-summary"></div>
+      <div class="panel final-chart-panel"><div class="tree-heading"><div><span class="option-tag">Tu función de utilidad</span><h2>Resultados, equivalentes ciertos y alternativa óptima</h2></div></div><canvas id="application-utility-chart" width="1080" height="560" role="img" aria-label="Función de utilidad personal con los resultados de BioValle Envases"></canvas><div class="application-chart-legend" id="application-chart-legend"></div></div>
+      <div class="application-callout game-callout">
+        <div><p class="eyebrow">Tercera parte</p><h2>¿Y si la incertidumbre decide?</h2><p>La demanda deja de ser un estado pasivo: ahora depende de la expansión de EcoPack Sur, un competidor con incentivos propios.</p></div>
+        <button class="button primary" id="game-button">Continuar: interacción competitiva</button>
+      </div>
+      <div class="result-actions"><button class="button secondary" id="download-complete-button">Descargar experiencia completa</button><button class="button subtle" id="review-application-button">Revisar los pasos</button><button class="button subtle" id="finish-button">Finalizar</button></div>
+      <p class="save-status" id="application-save-status"></p>
+    </section>
+
+    <section class="screen" id="screen-game-intro" aria-labelledby="game-intro-title">
+      <div class="content-card application-intro">
+        <p class="eyebrow">Teoría de juegos · BioValle Envases</p>
+        <h1 id="game-intro-title">Cuando el estado de la naturaleza tiene objetivos propios</h1>
+        <p class="lead">BioValle descubre que parte de la demanda depende de EcoPack Sur. El competidor puede mantener su capacidad o expandirse, y tomará la decisión que más le convenga.</p>
+        <div class="case-facts">
+          <article><span>Jugador 1</span><strong>BioValle elige su planta</strong></article>
+          <article><span>Jugador 2</span><strong>EcoPack decide si expandirse</strong></article>
+          <article><span>Resultados</span><strong>VPN de ambas empresas</strong></article>
+          <article><span>Pregunta</span><strong>¿Naturaleza o rival estratégico?</strong></article>
+        </div>
+        <div class="notice">Con el botón <em>Adelante</em> pasarás de la matriz de pagos al equilibrio de Nash y, luego, a un juego secuencial resuelto por inducción hacia atrás.</div>
+        <button class="button primary" id="game-start">Adelante</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-game" aria-labelledby="game-title">
+      <div class="application-shell">
+        <div class="application-topbar">
+          <div><p class="eyebrow">Caso BioValle Envases · Competencia</p><h1 id="game-title">De la incertidumbre a la estrategia</h1></div>
+          <div class="lesson-progress"><span id="game-step">Paso 1 de 8</span><div><i id="game-progress-bar"></i></div></div>
+        </div>
+        <section class="theory-timeline" aria-label="Línea de tiempo de los métodos">
+          <div class="timeline-heading"><span>Historia de las ideas</span><strong id="game-timeline-current"></strong></div>
+          <div class="timeline-track" id="game-timeline-track"></div>
+        </section>
+        <div class="application-layout game-layout">
+          <article class="lesson-panel panel" id="game-content" aria-live="polite"></article>
+          <aside class="tree-panel panel game-visual-panel">
+            <div class="tree-heading"><div><span class="option-tag">Representación estratégica</span><h2 id="game-visual-title">Matriz de pagos</h2></div></div>
+            <div id="game-visual" aria-live="polite"></div>
+          </aside>
+        </div>
+        <div class="lesson-navigation"><button class="button subtle" id="game-back">Atrás</button><span id="game-section-label">De la naturaleza al rival</span><button class="button primary" id="game-next">Adelante</button></div>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-game-results" aria-labelledby="game-results-title">
+      <div class="results-header application-results-header">
+        <div><p class="eyebrow">Recorrido completado</p><h1 id="game-results-title">Una misma empresa, tres formas de pensar al competidor</h1><p>La respuesta cambia según EcoPack sea tratado como azar, como jugador simultáneo o como seguidor que observa la decisión de BioValle.</p></div>
+        <div class="result-badge">Estrategia interactiva</div>
+      </div>
+      <div id="final-game-summary"></div>
+      <div class="panel history-synthesis"><h2>La secuencia histórica que recorriste</h2><div id="final-timeline"></div><p class="fine-print">Los hitos señalan publicaciones de referencia y formalizaciones decisivas; no implican que cada idea haya tenido un único inventor.</p></div>
+      <div class="result-actions"><button class="button secondary" id="download-full-button">Descargar experiencia completa</button><button class="button subtle" id="review-game-button">Revisar teoría de juegos</button><button class="button subtle" id="finish-game-button">Finalizar</button></div>
+      <p class="save-status" id="game-save-status"></p>
+    </section>
+  </main>
+
+  <footer><span>TDD · UNRN</span><span>Del riesgo a la interacción estratégica</span></footer>
+  <noscript>Esta actividad necesita JavaScript habilitado.</noscript>
+  <script src="firebase-config.runtime.js"></script>
+  <script type="module" src="app.js?v=5"></script>
+</body>
+</html>
