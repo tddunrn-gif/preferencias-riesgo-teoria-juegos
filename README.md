@@ -67,5 +67,6 @@ La actividad funciona sin Firebase, pero en ese caso advierte que no pudo confir
 
 ## Licencias
 
+- **Autor:** Fabio M. Miguel — [fmiguel@unrn.edu.ar](mailto:fmiguel@unrn.edu.ar).
 - El código fuente se distribuye bajo la [Licencia MIT](LICENSE).
 - Los textos, consignas y demás contenidos educativos se distribuyen bajo [Creative Commons Atribución 4.0 Internacional](LICENSE-CONTENT.md).
